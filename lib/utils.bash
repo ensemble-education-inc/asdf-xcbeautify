@@ -41,7 +41,7 @@ download_release() {
 	filename="$2"
 
 	# TODO: Adapt the release URL convention for xcbeautify
-	url="$GH_REPO/releases/download/${version}/xcbeautify-1.4.0-arm64-apple-macosx.zip"
+	url="$GH_REPO/releases/download/${version}/xcbeautify-${version}-arm64-apple-macosx.zip"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
