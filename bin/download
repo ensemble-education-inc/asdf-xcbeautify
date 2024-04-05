@@ -8,17 +8,41 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
-mkdir -p "$ASDF_DOWNLOAD_PATH"
+function main () {
+	mkdir -p "$ASDF_DOWNLOAD_PATH"
 
-# TODO: Adapt this to proper extension and adapt extracting strategy.
-release_file="$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$ASDF_INSTALL_VERSION-arm64-apple-macosx.zip"
+	declare -r script_runner_cpu="$(uname -m)"
+	declare -r script_runner_os="$(uname -s)"
 
-# Download tar.gz file to the download directory
-download_release "$ASDF_INSTALL_VERSION" "$release_file"
+	if [[ "$script_runner_os" == "Darwin" ]]; then
+		declare -r archive_suffix="apple-macosx.zip"
+	elif [[ "$script_runner_os" == "Linux" ]]; then
+		declare -r archive_suffix="unknown-linux-gnu.tar.xz"
+	else
+		fail "Unsupported OS: $script_runner_os"
+	fi
 
-#  Extract contents of tar.gz file into the download directory
-# tar -xzf "$release_file" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $release_file"
-unzip -o "$release_file" -d "$ASDF_DOWNLOAD_PATH" >/dev/null || fail "Could not extract $release_file"
+	declare -r archive_name="${TOOL_NAME}-${ASDF_INSTALL_VERSION}-${script_runner_cpu}-${archive_suffix}"
+	declare -r archive_download_path="${ASDF_DOWNLOAD_PATH}/${archive_name}"
 
-# Remove the tar.gz file since we don't need to keep it
-rm "$release_file"
+	# Download archive to the download directory
+	download_release "$ASDF_INSTALL_VERSION" "$archive_name"
+
+	# Extract contents of archive into the download directory
+	if [[ $archive_name == *.tar.xz ]]; then
+		tar --extract \
+			--file "$archive_download_path" \
+			--directory "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $archive_name"
+	elif [[ $archive_name == *.zip ]]; then
+		unzip \
+			-o "${archive_download_path}" \
+			-d "$ASDF_DOWNLOAD_PATH" >/dev/null || fail "Could not extract $archive_name"
+	else
+		fail "Unsupported archive format: $archive_name"
+	fi
+
+	# Remove the archive since we don't need to keep it
+	rm "$archive_download_path"
+}
+
+main "$@"
