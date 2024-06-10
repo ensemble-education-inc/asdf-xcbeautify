@@ -1,3 +1,9 @@
+> [!CAUTION]
+> 
+> This repository has been archived, and will be deleted at a later date
+>
+> We are now using the official `xcbeautify` plugin here: https://github.com/mise-plugins/asdf-xcbeautify
+
 <div align="center">
 
 # asdf-xcbeautify [![Build](https://github.com/andrelouw/asdf-xcbeautify/actions/workflows/build.yml/badge.svg)](https://github.com/andrelouw/asdf-xcbeautify/actions/workflows/build.yml) [![Lint](https://github.com/andrelouw/asdf-xcbeautify/actions/workflows/lint.yml/badge.svg)](https://github.com/andrelouw/asdf-xcbeautify/actions/workflows/lint.yml)
